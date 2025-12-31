@@ -16,6 +16,7 @@ Run `npm run build` to create a production build.
 
 ### Option 1: Automatic Deployment (Recommended)
 
+
 This repository includes a GitHub Actions workflow that automatically deploys to GitHub Pages when you push to the `main` or `master` branch.
 
 1. Make sure your repository is named correctly (the base path in `vite.config.ts` should match your repository name)
