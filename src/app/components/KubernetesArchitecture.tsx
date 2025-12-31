@@ -95,7 +95,10 @@ export const KubernetesArchitecture = () => {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <h1 className="text-4xl font-bold mb-4">Kubernetes Architecture 🕸️</h1>
+          <h1 className="text-4xl font-bold mb-4 flex items-center justify-center gap-3">
+            <Cpu className="text-blue-600" size={48} />
+            Kubernetes Architecture 🕸️
+          </h1>
           <p className="text-gray-600 max-w-3xl mx-auto">
             A visual guide to understanding the Kubernetes ecosystem - from the
             physical infrastructure to application deployment and service mesh
