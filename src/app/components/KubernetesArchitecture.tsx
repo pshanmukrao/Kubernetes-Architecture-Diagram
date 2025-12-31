@@ -95,10 +95,7 @@ export const KubernetesArchitecture = () => {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <h1 className="text-4xl font-bold mb-4 flex items-center justify-center gap-3">
-            <Cpu className="text-blue-600" size={48} />
-            Kubernetes Architecture 🕸️
-          </h1>
+          <h1 className="text-4xl font-bold mb-4">Kubernetes Architecture 🕸️</h1>
           <p className="text-gray-600 max-w-3xl mx-auto">
             A visual guide to understanding the Kubernetes ecosystem - from the
             physical infrastructure to application deployment and service mesh
@@ -175,7 +172,7 @@ export const KubernetesArchitecture = () => {
                 icon={<Zap size={24} className="text-purple-600" />}
                 title="Karpenter"
                 subtitle="🏎️"
-                description="Automated construction crew. Builds new Piers instantly if too many ships arrive. Smart autoscaler for adding Nodes."
+                description="The modern autoscaler. Scales Nodes directly via EC2 API in seconds (not minutes). Uses bin-packing to pick the cheapest, smallest instance that fits your Pods exactly. Installed via Helm."
                 color="border-purple-500"
                 delay={0.7}
               />
@@ -183,6 +180,187 @@ export const KubernetesArchitecture = () => {
           </section>
 
           <FlowArrow delay={0.8} />
+
+          {/* Helm and Karpenter Deep Dive */}
+          <section>
+            <motion.h2
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.85 }}
+              className="mb-6 flex items-center gap-2"
+            >
+              <Package className="text-indigo-600" />
+              📦 Helm: The App Store for Kubernetes
+            </motion.h2>
+            <div className="bg-white rounded-lg p-6 shadow-md mb-6">
+              <p className="text-gray-700 mb-4">
+                Think of <strong>Helm</strong> as the App Store or Homebrew for Kubernetes.
+                Instead of manually writing and applying many different YAML files (Deployment, Service, Permissions, etc.), Helm packages everything into a single <strong>Chart</strong>.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold mb-2 flex items-center gap-2">
+                    <Package className="text-blue-600" size={20} />
+                    Helm (The Tool)
+                  </h4>
+                  <p className="text-gray-600 text-sm">
+                    The command-line program (helm) that manages these apps.
+                  </p>
+                </div>
+                <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
+                  <h4 className="font-semibold mb-2 flex items-center gap-2">
+                    <FileCode className="text-purple-600" size={20} />
+                    Helm Chart
+                  </h4>
+                  <p className="text-gray-600 text-sm">
+                    A collection of YAML files bundled into a template. Install complex systems with one command.
+                  </p>
+                </div>
+                <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+                  <h4 className="font-semibold mb-2 flex items-center gap-2">
+                    <Box className="text-green-600" size={20} />
+                    Release
+                  </h4>
+                  <p className="text-gray-600 text-sm">
+                    An actual instance of a chart running in your cluster (e.g., "Production" or "Staging").
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <motion.h3
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.9 }}
+              className="mb-4 flex items-center gap-2 text-xl"
+            >
+              <Zap className="text-purple-600" />
+              🛠️ Installing Karpenter with Helm
+            </motion.h3>
+            <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg p-6 mb-6 border-2 border-purple-200">
+              <p className="text-gray-700 mb-4">
+                Because Karpenter needs special permissions to talk to AWS and create EC2 instances, installation happens in two phases:
+              </p>
+              <div className="space-y-4">
+                <div className="flex items-start gap-4 p-4 bg-white rounded-lg border border-purple-200">
+                  <div className="w-10 h-10 rounded-full bg-purple-600 text-white flex items-center justify-center shrink-0 font-bold">
+                    1
+                  </div>
+                  <div>
+                    <strong className="text-purple-900">The Cloud Side (IAM):</strong>
+                    <p className="text-gray-700 mt-1">
+                      Create an IAM Role using AWS CLI or Terraform that allows Karpenter to buy and sell EC2 instances on your behalf.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4 p-4 bg-white rounded-lg border border-purple-200">
+                  <div className="w-10 h-10 rounded-full bg-purple-600 text-white flex items-center justify-center shrink-0 font-bold">
+                    2
+                  </div>
+                  <div>
+                    <strong className="text-purple-900">The Cluster Side (Helm):</strong>
+                    <p className="text-gray-700 mt-1 mb-2">
+                      Install the Karpenter controller using Helm:
+                    </p>
+                    <code className="block bg-gray-800 text-green-400 p-3 rounded text-sm font-mono">
+                      helm install karpenter karpenter/karpenter \<br />
+                      &nbsp;&nbsp;--namespace karpenter --create-namespace \<br />
+                      &nbsp;&nbsp;--set settings.aws.clusterName=my-cluster
+                    </code>
+                    <p className="text-gray-600 text-sm mt-2">
+                      Helm takes the pre-made Karpenter Chart, plugs in your cluster name, and generates all the Kubernetes resources needed.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <motion.h3
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.95 }}
+              className="mb-4 flex items-center gap-2 text-xl"
+            >
+              <Trophy className="text-orange-600" />
+              ⚖️ Karpenter vs. Cluster Autoscaler
+            </motion.h3>
+            <div className="bg-white rounded-lg p-6 shadow-md border-2 border-gray-200 mb-6">
+              <p className="text-gray-700 mb-4">
+                This is the "old way" vs. the "new way" of scaling your infrastructure:
+              </p>
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse">
+                  <thead>
+                    <tr className="bg-gray-100">
+                      <th className="border border-gray-300 p-3 text-left font-semibold">Feature</th>
+                      <th className="border border-gray-300 p-3 text-left font-semibold bg-red-50">
+                        Cluster Autoscaler<br />
+                        <span className="text-sm font-normal text-gray-600">(The Standard)</span>
+                      </th>
+                      <th className="border border-gray-300 p-3 text-left font-semibold bg-green-50">
+                        Karpenter<br />
+                        <span className="text-sm font-normal text-gray-600">(The Modern Choice)</span>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="border border-gray-300 p-3 font-medium">Logic</td>
+                      <td className="border border-gray-300 p-3">
+                        Scales NodeGroups (AWS Auto Scaling Groups) 📁
+                      </td>
+                      <td className="border border-gray-300 p-3">
+                        Scales Nodes directly via the EC2 API 💻
+                      </td>
+                    </tr>
+                    <tr className="bg-gray-50">
+                      <td className="border border-gray-300 p-3 font-medium">Speed</td>
+                      <td className="border border-gray-300 p-3">
+                        Slow (minutes). Waits for AWS to spin up a group member 🐢
+                      </td>
+                      <td className="border border-gray-300 p-3">
+                        Fast (seconds). Picks a specific instance and grabs it immediately 🏎️
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-3 font-medium">Efficiency</td>
+                      <td className="border border-gray-300 p-3">
+                        Often over-provisions. You get whatever size the NodeGroup says
+                      </td>
+                      <td className="border border-gray-300 p-3">
+                        Bin-packing. Looks at your Pods and picks the cheapest, smallest instance that fits exactly 💰
+                      </td>
+                    </tr>
+                    <tr className="bg-gray-50">
+                      <td className="border border-gray-300 p-3 font-medium">Flexibility</td>
+                      <td className="border border-gray-300 p-3">
+                        Limited to the instance types you pre-defined in your group
+                      </td>
+                      <td className="border border-gray-300 p-3">
+                        Access to the entire AWS catalog. Can pick a GPU node one minute and an ARM node the next
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg p-6 text-white shadow-xl">
+              <h4 className="mb-3 flex items-center gap-2 text-lg font-semibold">
+                💡 Key Insight
+              </h4>
+              <p className="text-blue-50 mb-3">
+                <strong>Question:</strong> If you have a Pod that needs 64GB of RAM, do you need to create a new 64GB NodeGroup first?
+              </p>
+              <div className="bg-white/10 rounded-lg p-4 border border-white/20">
+                <p className="text-white">
+                  <strong>Answer:</strong> With Karpenter, you don't! 🤖 Karpenter sees the 64GB requirement and automatically provisions the right instance from AWS. No manual NodeGroup creation needed.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <FlowArrow delay={1.0} />
 
           {/* Layer 2: Application */}
           <section>
@@ -481,8 +659,7 @@ export const KubernetesArchitecture = () => {
                 <div>
                   <strong>Cluster Setup:</strong>
                   <p className="text-gray-600">
-                    AWS provisions Nodes (EC2 instances) organized in
-                    NodeGroups. Karpenter monitors and adds Nodes as needed.
+                    AWS provisions Nodes (EC2 instances) organized in NodeGroups. Karpenter (installed via Helm) monitors Pod requirements and automatically adds Nodes in seconds when needed, using bin-packing to select the most cost-effective instance.
                   </p>
                 </div>
               </div>
@@ -805,29 +982,26 @@ export const KubernetesArchitecture = () => {
                 The Hero: Karpenter 🏎️
               </h3>
               <p className="text-white/90 mb-3">
-                Remember Karpenter from the Infrastructure Layer? This is where
-                it shines!
+                Remember Karpenter (installed via Helm) from the Infrastructure Layer? This is where it shines!
               </p>
               <div className="space-y-2 text-white/90">
                 <p>
-                  ✅ <strong>Karpenter</strong> detects the PENDING Pod that
-                  can't be scheduled
+                  ✅ <strong>Karpenter</strong> detects the PENDING Pod that can't be scheduled
                 </p>
                 <p>
-                  ✅ It analyzes the Pod's requirements (4GB RAM needed)
+                  ✅ It analyzes the Pod's requirements (4GB RAM needed) and uses bin-packing logic
                 </p>
                 <p>
-                  ✅ It quickly provisions a new EC2 Node with sufficient
-                  resources from AWS
+                  ✅ It quickly provisions a new EC2 Node (in seconds, not minutes!) with sufficient resources from AWS
                 </p>
                 <p>
-                  ✅ The new Node joins the cluster, and Kube-scheduler
-                  immediately binds the Pod to it
+                  ✅ Unlike Cluster Autoscaler, it doesn't need a pre-configured NodeGroup - it picks the perfect instance from the entire AWS catalog
+                </p>
+                <p>
+                  ✅ The new Node joins the cluster, and Kube-scheduler immediately binds the Pod to it
                 </p>
                 <p className="mt-4 p-3 bg-green-500/30 rounded border border-green-300">
-                  <strong>Result:</strong> Your Pod goes from PENDING to RUNNING
-                  automatically! This is the power of declarative infrastructure
-                  + autoscaling.
+                  <strong>Result:</strong> Your Pod goes from PENDING to RUNNING automatically! This is the power of declarative infrastructure + modern autoscaling with Karpenter.
                 </p>
               </div>
             </div>
